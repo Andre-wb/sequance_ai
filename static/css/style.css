@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 50px;
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+input {
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 20px;
+    border: 2px solid #000;
+    text-align: center;
+    transition: 0.3s;
+    outline: none;
+}
+input:focus {
+    border: 2px solid limegreen;
+    box-shadow: 2px 2px 10px limegreen;
+    outline: none;
+}
+input:focus::placeholder {
+    color: limegreen;
+    transition: 0.3s;
+    outline: none;
+}
+input:focus {
+    border: 2px solid limegreen;
+    box-shadow: 2px 2px 10px limegreen;
+    outline: none;
+}
+input:focus::placeholder {
+    color: limegreen;
+}
+button {
+    padding: 15px 20px;
+    font-size: 18px;
+    margin-top: 10px;
+    border-radius: 20px;
+    border: none;
+    transition: 0.5s;
+    background: #000;
+    color: #fff;
+    font-weight: 900;
+}
+button:active {
+    transform: scale(0.9);
+}
+.output {
+    margin-top: 20px;
+    font-size: 20px;
+    color: green;
+}
