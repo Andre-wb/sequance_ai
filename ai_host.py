@@ -10,13 +10,11 @@ def predict_sequence(sequence, num_predictions=5):
     x = np.arange(len(sequence)).reshape(-1, 1)
     y = sequence
 
-    # Полиномиальная регрессия
     poly = PolynomialFeatures(degree=2)
     x_poly = poly.fit_transform(x)
     model = LinearRegression()
     model.fit(x_poly, y)
 
-    # Генерируем прогноз
     future_x = np.arange(len(sequence), len(sequence) + num_predictions).reshape(-1, 1)
     future_x_poly = poly.transform(future_x)
     predictions = model.predict(future_x_poly)
@@ -24,7 +22,7 @@ def predict_sequence(sequence, num_predictions=5):
 
 @app.route('/')
 def home():
-    return render_template('index.html')  # Возвращаем HTML
+    return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
