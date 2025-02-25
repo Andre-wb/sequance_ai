@@ -5,20 +5,38 @@ from sklearn.linear_model import LinearRegression
 
 app = Flask(__name__)
 
+def detect_pattern(sequence):
+    """Определяет закономерность в последовательности."""
+    diffs = np.diff(sequence)
+
+    if np.all(diffs == diffs[0]):  # Арифметическая прогрессия (сложение/вычитание)
+        return "addition"
+
+    if np.all(diffs[1:] / diffs[:-1] == diffs[1] / diffs[0]):  # Геометрическая прогрессия (умножение/деление)
+        return "multiplication"
+
+    if np.all(np.sqrt(sequence) == np.round(np.sqrt(sequence))):  # Последовательность квадратов
+        return "squares"
+
+    return None  # Неизвестный паттерн
+
 def predict_sequence(sequence, num_predictions=5):
+    pattern = detect_pattern(sequence)
     sequence = np.array(sequence)
-    x = np.arange(len(sequence)).reshape(-1, 1)
-    y = sequence
 
-    poly = PolynomialFeatures(degree=2)
-    x_poly = poly.fit_transform(x)
-    model = LinearRegression()
-    model.fit(x_poly, y)
+    if pattern == "addition":  # Арифметическая прогрессия
+        step = sequence[1] - sequence[0]
+        predictions = [sequence[-1] + step * (i + 1) for i in range(num_predictions)]
+    elif pattern == "multiplication":  # Геометрическая прогрессия
+        ratio = sequence[1] / sequence[0]
+        predictions = [sequence[-1] * (ratio ** (i + 1)) for i in range(num_predictions)]
+    elif pattern == "squares":  # Квадраты чисел
+        n = int(np.sqrt(sequence[-1]))
+        predictions = [(n + i + 1) ** 2 for i in range(num_predictions)]
+    else:
+        raise ValueError("Неизвестная последовательность. Поддерживаются только сложение, умножение и квадраты чисел.")
 
-    future_x = np.arange(len(sequence), len(sequence) + num_predictions).reshape(-1, 1)
-    future_x_poly = poly.transform(future_x)
-    predictions = model.predict(future_x_poly)
-    return predictions.tolist()
+    return predictions
 
 @app.route('/')
 def home():
