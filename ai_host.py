@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify, render_template
 import numpy as np
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.linear_model import LinearRegression
 
 app = Flask(__name__)
 
@@ -9,16 +7,16 @@ def detect_pattern(sequence):
     """Определяет закономерность в последовательности."""
     diffs = np.diff(sequence)
 
-    if np.all(diffs == diffs[0]):  # Арифметическая прогрессия (сложение/вычитание)
+    if np.all(diffs == diffs[0]):  # Арифметическая прогрессия
         return "addition"
 
-    if np.all(diffs[1:] / diffs[:-1] == diffs[1] / diffs[0]):  # Геометрическая прогрессия (умножение/деление)
+    if np.all(diffs[1:] / diffs[:-1] == diffs[1] / diffs[0]):  # Геометрическая прогрессия
         return "multiplication"
 
     if np.all(np.sqrt(sequence) == np.round(np.sqrt(sequence))):  # Последовательность квадратов
         return "squares"
 
-    return None  # Неизвестный паттерн
+    return "unknown"  # Неизвестный паттерн, но без ошибки
 
 def predict_sequence(sequence, num_predictions=5):
     pattern = detect_pattern(sequence)
@@ -34,7 +32,9 @@ def predict_sequence(sequence, num_predictions=5):
         n = int(np.sqrt(sequence[-1]))
         predictions = [(n + i + 1) ** 2 for i in range(num_predictions)]
     else:
-        raise ValueError("Неизвестная последовательность. Поддерживаются только сложение, умножение и квадраты чисел.")
+        # Если паттерн не распознан, просто продолжаем последовательность разницей последних двух чисел
+        step = sequence[-1] - sequence[-2]
+        predictions = [sequence[-1] + step * (i + 1) for i in range(num_predictions)]
 
     return predictions
 
@@ -55,7 +55,7 @@ def predict():
         predictions = predict_sequence(sequence)
         return jsonify({"input": sequence, "predictions": predictions})
     except Exception as e:
-        return jsonify({"error": f"Ошибка обработки: {str(e)}"}), 400
+        return jsonify({"error": f"Что-то пошло не так, но нейросеть продолжает работать!", "details": str(e)}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)
